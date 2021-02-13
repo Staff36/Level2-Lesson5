@@ -1,8 +1,12 @@
 package com.Lesson5;
 
-public class Main {
+import java.util.concurrent.*;
 
+public class Main {
     public static void main(String[] args) {
-	// write your code here
+        TestApp testApp= new TestApp();
+        testApp.tesSingleThread();
+        testApp.testMultiThread();
     }
+
 }
