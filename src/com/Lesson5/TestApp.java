@@ -19,26 +19,21 @@ public class TestApp {
     }
 
 
-    public void testMultiThread() {
+    public void testMultiThread() throws InterruptedException {
         float[] arr=createArray();
-        float[][] arrPartOne= new float[2][h];
+        float[][] arrPart= new float[2][h];
         Thread[] threadArr = new Thread[2];
+
         Long startTime= System.currentTimeMillis();
         for (int i = 0; i < 2; i++) {
-            System.arraycopy(arr, 0, arrPartOne[i], 0, h);
-            threadArr[i]= new Thread(new Calculator(arrPartOne[i],h*i,h));
+            System.arraycopy(arr, 0, arrPart[i], 0, h);
+            threadArr[i]= new Thread(new Calculator(arrPart[i],h*i,h));
             threadArr[i].start();
         }
-
         for (int i = 0; i < 2; i++) {
-        try {
             threadArr[i].join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            System.arraycopy(arrPart[i],0,arr,h*i,h);
         }
-            System.arraycopy(arrPartOne[0],0,arr,h*i,h);
-        }
-
         Long endTime= System.currentTimeMillis();
         System.out.println("Working time in two-threading mode: "+(endTime-startTime)+" ms");
 
@@ -51,8 +46,6 @@ public class TestApp {
         }
         return testArray;
     }
-
-
 }
 class Calculator implements Runnable{
     float[] arr;
