@@ -8,39 +8,36 @@ public class TestApp {
     static final int size = 10000000;
     static final int h = size / 2;
 
-    public void tesSingleThread(){
+    public void testSingleThread(){
         float[] arr=createArray();
         Long startTime= System.currentTimeMillis();
         for (int i = 0; i < size; i++)
             arr[i] = (float)(arr[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
 
         Long endTime= System.currentTimeMillis();
-        System.out.println("Time of working single-threading mode: "+(endTime-startTime)+" ms");
+        System.out.println("Working time in single-threading mode: "+(endTime-startTime)+" ms");
     }
 
 
     public void testMultiThread() {
         float[] arr=createArray();
-        float[] arrPartOne= new float[h];
-        float[] arrPartTwo= new float[h];
-
+        float[][] arrPartOne= new float[2][h];
+        Thread[] threadArr = new Thread[2];
         Long startTime= System.currentTimeMillis();
-        System.arraycopy(arr,0,arrPartOne,0,h);
-        System.arraycopy(arr,h,arrPartTwo,0,h);
+        for (int i = 0; i < 2; i++) {
+            System.arraycopy(arr, 0, arrPartOne[i], 0, h);
+            threadArr[i]= new Thread(new Calculator(arrPartOne[i],h*i,h));
+            threadArr[i].start();
+        }
 
-        Thread threadOne= new Thread(new Calculator(arrPartOne,h));
-        Thread threadTwo= new Thread(new Calculator(arrPartTwo,h));
-        threadOne.start();
-        threadTwo.start();
+        for (int i = 0; i < 2; i++) {
         try {
-            threadOne.join();
-            threadTwo.join();
+            threadArr[i].join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        System.arraycopy(arrPartOne,0,arr,0,h);
-        System.arraycopy(arrPartTwo,0,arr,h,h);
+            System.arraycopy(arrPartOne[0],0,arr,0,h);
+        }
 
         Long endTime= System.currentTimeMillis();
         System.out.println("Working time in two-threading mode: "+(endTime-startTime)+" ms");
@@ -60,14 +57,15 @@ public class TestApp {
 class Calculator implements Runnable{
     float[] arr;
     int capacity;
-
-    public Calculator(float[] arr, int capacity) {
+    int start;
+    public Calculator(float[] arr,int start, int capacity) {
+        this.start=start;
         this.arr = arr;
         this.capacity= capacity;
     }
     @Override
     public void run() {
-        for (int i = 0; i < capacity; i++) {
+        for (int i = start; i < capacity; i++) {
             arr[i]=(float)(arr[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
         }
     }
