@@ -36,7 +36,7 @@ public class TestApp {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-            System.arraycopy(arrPartOne[0],0,arr,0,h);
+            System.arraycopy(arrPartOne[0],0,arr,h*i,h);
         }
 
         Long endTime= System.currentTimeMillis();
